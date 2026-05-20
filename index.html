@@ -680,19 +680,32 @@ async function loadEverything() {
     }
     document.getElementById('logout-btn').style.display = 'inline-flex';
 
-    // Fetch playlists directly from each crew member account
-    showLoading("Fetching playlists from the crew...");
+    // Search for Looseners playlists and filter to crew
+    showLoading("Searching for the Looseners playlists...");
     let looseners = [];
+    let offset = 0;
+    let keepGoing = true;
+    while (keepGoing) {
+      const res = await api(`/me/playlists?limit=50&offset=${offset}`);
+      const items = res.items || [];
+      const matched = items.filter(p =>
+        p && p.name && p.name.toLowerCase().startsWith(LOOSENER_KEYWORD)
+      );
+      looseners = looseners.concat(matched);
+      if (res.next && items.length === 50) { offset += 50; } else { keepGoing = false; }
+    }
+    // Also search public playlists by each crew member
     for (const userId of CREW) {
-      let pageUrl = `/users/${userId}/playlists?limit=50`;
-      while (pageUrl) {
+      try {
+        let pageUrl = `/search?q=looseners+owner:${userId}&type=playlist&limit=50`;
         const res = await api(pageUrl);
-        const crewItems = (res.items || []).filter(p =>
-          p && p.name && p.name.toLowerCase().startsWith(LOOSENER_KEYWORD)
+        const items = (res.playlists?.items || []).filter(p =>
+          p && p.name && p.name.toLowerCase().startsWith(LOOSENER_KEYWORD) &&
+          CREW.includes(p.owner?.id) &&
+          !looseners.find(l => l.id === p.id)
         );
-        looseners = looseners.concat(crewItems);
-        pageUrl = res.next ? res.next.replace("https://api.spotify.com/v1", "") : null;
-      }
+        looseners = looseners.concat(items);
+      } catch(e) { console.warn("Search failed for", userId, e); }
     }
 
     // Fetch tracks for each playlist
