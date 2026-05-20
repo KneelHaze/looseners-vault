@@ -706,7 +706,7 @@ async function loadEverything() {
 
       let tracks = [];
       try {
-        let turl = `/playlists/${pl.id}/tracks?limit=100`;
+        let turl = `/playlists/${pl.id}/items?limit=100`;
         while (turl) {
           const page = await api(turl);
           tracks = tracks.concat(page.items);
@@ -744,12 +744,12 @@ async function loadEverything() {
       const playlistDate = dateMatch ? dateMatch[1] : '';
 
       for (const item of tracks) {
-        if (!item.track) continue;
+        if (!item.item) continue;
         allSongs.push({
-          trackId: item.track.id,
-          track: item.track.name,
-          artist: item.track.artists.map(a => a.name).join(', '),
-          album: item.track.album?.name || '',
+          trackId: item.item.id,
+          track: item.item.name,
+          artist: item.item.artists.map(a => a.name).join(', '),
+          album: item.item.album?.name || '',
           playlist: pl.name,
           playlistId: pl.id,
           playlistDate,
