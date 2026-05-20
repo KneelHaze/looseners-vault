@@ -714,6 +714,19 @@ async function loadEverything() {
         }
       } catch(e) {
         console.warn('Skipping ' + pl.name + ' no access:', e);
+        allSongs.push({
+          trackId: 'error-' + pl.id,
+          track: '⚠ Could not load: ' + pl.name,
+          artist: e.message || 'Access denied',
+          album: '',
+          playlist: pl.name,
+          playlistId: pl.id,
+          playlistDate: '',
+          date: '',
+          addedBy: '—',
+          addedById: '',
+          isDuplicate: false,
+        });
         continue;
       }
 
