@@ -680,19 +680,19 @@ async function loadEverything() {
     }
     document.getElementById('logout-btn').style.display = 'inline-flex';
 
-    // Search Spotify for Looseners playlists, filter to crew only
-    showLoading("Searching for Looseners playlists...");
+    // Fetch playlists directly from each crew member account
+    showLoading("Fetching playlists from the crew...");
     let looseners = [];
-    let searchUrl = "/search?q=looseners&type=playlist&limit=50";
-    while (searchUrl) {
-      const res = await api(searchUrl);
-      const items = res.playlists?.items || [];
-      const crewItems = items.filter(p =>
-        p && p.name && p.name.toLowerCase().startsWith(LOOSENER_KEYWORD) &&
-        CREW.includes(p.owner?.id)
-      );
-      looseners = looseners.concat(crewItems);
-      searchUrl = res.playlists?.next ? res.playlists.next.replace("https://api.spotify.com/v1", "") : null;
+    for (const userId of CREW) {
+      let pageUrl = `/users/${userId}/playlists?limit=50`;
+      while (pageUrl) {
+        const res = await api(pageUrl);
+        const crewItems = (res.items || []).filter(p =>
+          p && p.name && p.name.toLowerCase().startsWith(LOOSENER_KEYWORD)
+        );
+        looseners = looseners.concat(crewItems);
+        pageUrl = res.next ? res.next.replace("https://api.spotify.com/v1", "") : null;
+      }
     }
 
     // Fetch tracks for each playlist
