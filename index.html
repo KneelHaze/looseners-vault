@@ -705,11 +705,16 @@ async function loadEverything() {
       showLoading(`Loading ${i+1}/${looseners.length}: ${pl.name}`);
 
       let tracks = [];
-      let turl = `/playlists/${pl.id}/tracks?limit=100`;
-      while (turl) {
-        const page = await api(turl);
-        tracks = tracks.concat(page.items);
-        turl = page.next ? page.next.replace('https://api.spotify.com/v1', '') : null;
+      try {
+        let turl = `/playlists/${pl.id}/tracks?limit=100`;
+        while (turl) {
+          const page = await api(turl);
+          tracks = tracks.concat(page.items);
+          turl = page.next ? page.next.replace('https://api.spotify.com/v1', '') : null;
+        }
+      } catch(e) {
+        console.warn('Skipping ' + pl.name + ' no access:', e);
+        continue;
       }
 
       // Resolve added_by display names
