@@ -506,7 +506,7 @@
 
 <script>
 // ── CONFIG ──
-const SCOPES = 'playlist-read-private playlist-read-collaborative user-read-private';
+const SCOPES = 'playlist-read-private playlist-read-collaborative playlist-read-public user-read-private';
 const LOOSENER_KEYWORD = 'looseners';
 const CREW = ['kneelhaze', 'soundtheory', '1129784588'];
 
@@ -622,7 +622,7 @@ async function startAuth() {
     code_challenge: challenge,
     state,
     scope: SCOPES,
-    show_dialog: 'false',
+    show_dialog: 'true',
   });
 
   window.location = 'https://accounts.spotify.com/authorize?' + params;
@@ -717,7 +717,7 @@ async function loadEverything() {
       showLoading(`Loading ${i+1}/${looseners.length}: ${pl.name}`);
 
       let tracks = [];
-      let turl = `/playlists/${pl.id}/tracks?limit=100&fields=next,items(added_by.id,track(id,name,artists,album(name)))`;
+      let turl = `/playlists/${pl.id}/tracks?limit=100`;
       while (turl) {
         const page = await api(turl);
         tracks = tracks.concat(page.items);
