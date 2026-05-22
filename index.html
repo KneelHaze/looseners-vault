@@ -121,6 +121,11 @@
   .nav-tab { font-family: 'DM Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 16px; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; }
   .nav-tab.active { color: var(--green); border-bottom-color: var(--green); }
   .nav-tab:hover:not(.active) { color: var(--text); }
+  .migrate-banner { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.3); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: none; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .migrate-banner p { font-size: 0.85rem; color: var(--text); flex: 1; min-width: 200px; }
+  .migrate-banner p span { color: #f5a623; font-weight: 500; }
+  .btn-amber { background: #f5a623; color: #000; }
+  .btn-amber:hover { background: #f7b93e; }
   @media (max-width: 700px) { .stats-row { grid-template-columns: 1fr 1fr; } td:nth-child(4), th:nth-child(4) { display: none; } }
   @media (max-width: 500px) { td:nth-child(3), th:nth-child(3) { display: none; } .setup-card { padding: 32px 24px; } }
 </style>
@@ -180,6 +185,13 @@
     </div>
   </div>
 
+  <!-- Migration banner -->
+  <div class="migrate-banner" id="migrate-banner">
+    <p>🎵 We found <span id="migrate-count"></span> songs from your previous session in this browser. Want to move them up to Google Sheets so everyone can see them?</p>
+    <button class="btn btn-amber btn-sm" onclick="migrateData()">Move to Google Sheets</button>
+    <button class="btn btn-ghost btn-sm" onclick="dismissMigration()">Dismiss</button>
+  </div>
+
   <!-- Songs tab -->
   <div id="dashboard">
     <div class="add-panel">
@@ -237,26 +249,36 @@
 </div>
 
 <script>
-// ── STORAGE ──
-// Uses localStorage so data persists across sessions
-// Key: looseners_vault_data
-function loadData() {
-  try {
-    const raw = localStorage.getItem('looseners_vault_data');
-    return raw ? JSON.parse(raw) : { playlists: [], songs: [] };
-  } catch { return { playlists: [], songs: [] }; }
-}
-function saveData(data) {
-  localStorage.setItem('looseners_vault_data', JSON.stringify(data));
-}
+// ── CONFIG ──
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoJlUGdPg0tIcEb4OBSz6b86EvcOm7BJ46jgEg6Pt_154pWe51IDA3XESecB140qWp/exec';
+const SECRET = 'looseners2024';
 
 // ── STATE ──
 let accessToken = null;
-let vaultData = loadData();
-let allSongs = vaultData.songs || [];
+let vaultData = { playlists: [], songs: [] };
+let allSongs = [];
 let currentSort = { col: 'playlist', dir: 'desc' };
 let currentFilter = 'all';
 let currentTab = 'songs';
+
+// ── GOOGLE SHEETS ──
+async function fetchVaultData() {
+  const res = await fetch(SCRIPT_URL + '?action=getSongs');
+  const data = await res.json();
+  return data;
+}
+
+async function postToSheet(payload) {
+  // no-cors POST to avoid preflight issues with Google Apps Script
+  await fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({ ...payload, secret: SECRET })
+  });
+  // Give the sheet a moment to update then re-fetch
+  await new Promise(r => setTimeout(r, 2500));
+  return fetchVaultData();
+}
 
 // ── REDIRECT URI ──
 function getRedirectUri() { return window.location.origin + window.location.pathname; }
@@ -377,8 +399,20 @@ async function exchangeCode(code, verifier, clientId) {
   document.getElementById('user-name').textContent = me.display_name || me.id;
   if (me.images && me.images[0]) document.getElementById('user-avatar').src = me.images[0].url;
   document.getElementById('logout-btn').style.display = 'inline-flex';
+  // Fetch data from Google Sheets
+  showLoading('Fetching the Vault from Google Sheets...');
+  try {
+    const data = await fetchVaultData();
+    vaultData = data;
+    allSongs = vaultData.songs || [];
+  } catch(e) {
+    console.warn('Could not fetch from Google Sheets:', e);
+    vaultData = { playlists: [], songs: [] };
+    allSongs = [];
+  }
   markDuplicates();
   showDashboard();
+  checkForLocalData();
 }
 function logout() {
   accessToken = null;
@@ -453,12 +487,12 @@ async function addPlaylist() {
       });
     }
 
-    // Save to vault
-    vaultData.playlists.push({ id: pl.id, name: pl.name, date: playlistDate, trackCount: newSongs.length, addedAt: new Date().toISOString() });
-    vaultData.songs = (vaultData.songs || []).concat(newSongs);
-    saveData(vaultData);
-
-    allSongs = vaultData.songs;
+    // Save to Google Sheets
+    const playlist = { id: pl.id, name: pl.name, date: playlistDate, trackCount: newSongs.length, addedAt: new Date().toISOString() };
+    btn.textContent = 'Saving to Sheets...';
+    const updated = await postToSheet({ action: 'addPlaylist', playlist, songs: newSongs });
+    vaultData = updated;
+    allSongs = vaultData.songs || [];
     markDuplicates();
     buildStats();
     renderTable();
@@ -489,7 +523,7 @@ async function addPlaylist() {
 }
 
 // ── CSV IMPORT (Exportify) ──
-function handleCSV(event) {
+async function handleCSV(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -535,15 +569,15 @@ function handleCSV(event) {
 
     if (newSongs.length === 0) { alert('No songs found in CSV!'); return; }
 
-    vaultData = loadData();
     const playlistId = 'csv-' + playlistName.replace(/\s/g, '-').toLowerCase();
-    if (vaultData.playlists.find(p => p.id === playlistId)) {
+    if (vaultData.playlists && vaultData.playlists.find(p => p.id === playlistId)) {
       alert('This playlist is already in the Vault!'); return;
     }
-    vaultData.playlists.push({ id: playlistId, name: playlistName, date: '', trackCount: newSongs.length, addedAt: new Date().toISOString() });
-    vaultData.songs = (vaultData.songs || []).concat(newSongs);
-    saveData(vaultData);
-    allSongs = vaultData.songs;
+    const playlist = { id: playlistId, name: playlistName, date: '', trackCount: newSongs.length, addedAt: new Date().toISOString() };
+    document.getElementById('csv-upload-area').textContent = 'Saving to Sheets...';
+    const updated = await postToSheet({ action: 'addPlaylist', playlist, songs: newSongs });
+    vaultData = updated;
+    allSongs = vaultData.songs || [];
     markDuplicates();
     buildStats();
     renderTable();
@@ -654,15 +688,69 @@ function renderPlaylists() {
     </div>
   `).join('');
 }
-function removePlaylist(id) {
+async function removePlaylist(id) {
   if (!confirm('Remove this playlist and all its songs from the Vault?')) return;
-  vaultData.playlists = vaultData.playlists.filter(p => p.id !== id);
-  vaultData.songs = vaultData.songs.filter(s => s.playlistId !== id);
-  saveData(vaultData);
-  allSongs = vaultData.songs;
-  markDuplicates();
-  renderPlaylists();
-  renderTable();
+  try {
+    const updated = await postToSheet({ action: 'removePlaylist', playlistId: id });
+    vaultData = updated;
+    allSongs = vaultData.songs || [];
+    markDuplicates();
+    renderPlaylists();
+    renderTable();
+  } catch(e) {
+    alert('Could not remove playlist: ' + e.message);
+  }
+}
+
+// ── MIGRATION ──
+function checkForLocalData() {
+  try {
+    const raw = localStorage.getItem('looseners_vault_data');
+    if (!raw) return;
+    const local = JSON.parse(raw);
+    if (!local.songs || local.songs.length === 0) return;
+    // Only show if Google Sheets is empty
+    if (vaultData.songs && vaultData.songs.length > 0) return;
+    document.getElementById('migrate-count').textContent = local.songs.length + ' songs across ' + (local.playlists || []).length + ' playlists';
+    document.getElementById('migrate-banner').style.display = 'flex';
+  } catch(e) { console.warn('Migration check failed:', e); }
+}
+
+async function migrateData() {
+  const raw = localStorage.getItem('looseners_vault_data');
+  if (!raw) return;
+  const local = JSON.parse(raw);
+  const playlists = local.playlists || [];
+  const songs = local.songs || [];
+  if (songs.length === 0) return;
+
+  const btn = document.querySelector('.migrate-banner .btn-amber');
+  btn.textContent = 'Moving...'; btn.disabled = true;
+
+  try {
+    // Send all playlists one by one
+    for (const pl of playlists) {
+      const plSongs = songs.filter(s => s.playlistId === pl.id);
+      await postToSheet({ action: 'addPlaylist', playlist: pl, songs: plSongs });
+    }
+    // Re-fetch
+    const updated = await fetchVaultData();
+    vaultData = updated;
+    allSongs = vaultData.songs || [];
+    markDuplicates();
+    buildStats();
+    renderTable();
+    localStorage.removeItem('looseners_vault_data');
+    document.getElementById('migrate-banner').style.display = 'none';
+    alert('✅ All done! ' + songs.length + ' songs moved to Google Sheets.');
+  } catch(e) {
+    alert('Migration failed: ' + e.message);
+    btn.textContent = 'Move to Google Sheets'; btn.disabled = false;
+  }
+}
+
+function dismissMigration() {
+  document.getElementById('migrate-banner').style.display = 'none';
 }
 
 function esc(str) { return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
