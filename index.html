@@ -67,6 +67,15 @@
   .add-panel-field input:focus { border-color: var(--green); }
   .add-panel-field input::placeholder { color: #444; }
   #add-error { width: 100%; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--red); display: none; padding-top: 4px; }
+  .exportify-hint { width: 100%; margin-top: 10px; display: none; background: rgba(29,185,84,0.06); border: 1px solid rgba(29,185,84,0.2); border-radius: 8px; padding: 12px 16px; font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+  .exportify-hint strong { color: var(--text); }
+  .exportify-hint a { color: var(--green); text-decoration: none; font-weight: 500; }
+  .exportify-hint a:hover { text-decoration: underline; }
+  .divider { width: 100%; display: flex; align-items: center; gap: 12px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin: 4px 0; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .csv-upload-area { width: 100%; border: 1px dashed var(--border); border-radius: 8px; padding: 14px; text-align: center; cursor: pointer; transition: border-color 0.2s; font-size: 0.82rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .csv-upload-area:hover { border-color: var(--green); color: var(--text); }
+  #csv-file-input { display: none; }
   /* Stats */
   .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
   .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
@@ -175,11 +184,22 @@
   <div id="dashboard">
     <div class="add-panel">
       <div class="add-panel-field">
-        <label>Add a Looseners playlist</label>
-        <input type="text" id="playlist-url-input" placeholder="Paste Spotify playlist link e.g. https://open.spotify.com/playlist/...">
+        <label>Add a Looseners playlist — paste a Spotify link</label>
+        <input type="text" id="playlist-url-input" placeholder="https://open.spotify.com/playlist/...">
       </div>
       <button class="btn" onclick="addPlaylist()" id="add-btn">+ Add to Vault</button>
       <div id="add-error"></div>
+      <div class="exportify-hint" id="exportify-hint">
+        <strong>Spotify won't let us in to this one.</strong> No sweat — use Exportify instead:<br>
+        1. Click <a id="exportify-link" href="https://exportify.net" target="_blank">Open in Exportify ↗</a> (log in with Spotify if needed)<br>
+        2. Find the playlist, click <strong>Export</strong> → saves a CSV file<br>
+        3. Upload it below 👇
+      </div>
+      <div class="divider" id="csv-divider" style="display:none;">or upload a CSV from Exportify</div>
+      <div class="csv-upload-area" id="csv-upload-area" style="display:none;" onclick="document.getElementById('csv-file-input').click()">
+        📄 Click to upload Exportify CSV
+      </div>
+      <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSV(event)">
     </div>
     <div class="stats-row">
       <div class="stat-card"><div class="stat-val" id="stat-songs">0</div><div class="stat-label">Total Songs</div></div>
@@ -446,11 +466,112 @@ async function addPlaylist() {
     errEl.style.display = 'none';
 
   } catch(e) {
-    errEl.textContent = 'Could not load playlist: ' + e.message;
-    errEl.style.display = 'block';
+    if (e.message.includes('403')) {
+      errEl.textContent = "Spotify won't share this playlist's tracks with us.";
+      errEl.style.display = 'block';
+      // Show Exportify hint with correct link
+      const hint = document.getElementById('exportify-hint');
+      const link = document.getElementById('exportify-link');
+      const playlistUrl = document.getElementById('playlist-url-input').value.trim();
+      link.href = 'https://exportify.net';
+      hint.style.display = 'block';
+      document.getElementById('csv-divider').style.display = 'flex';
+      document.getElementById('csv-upload-area').style.display = 'block';
+      // Store the playlist URL for later use with CSV
+      window._pendingPlaylistUrl = playlistUrl;
+    } else {
+      errEl.textContent = 'Could not load playlist: ' + e.message;
+      errEl.style.display = 'block';
+    }
   }
 
   btn.textContent = '+ Add to Vault'; btn.disabled = false;
+}
+
+// ── CSV IMPORT (Exportify) ──
+function handleCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.split('\n');
+    if (lines.length < 2) { alert('CSV looks empty!'); return; }
+
+    // Parse header row
+    const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z]/g, ''));
+    const col = name => headers.indexOf(name);
+    const trackCol = col('trackname') !== -1 ? col('trackname') : col('name');
+    const artistCol = col('artistname') !== -1 ? col('artistname') : col('artist');
+    const albumCol = col('albumname') !== -1 ? col('albumname') : col('album');
+    const addedByCol = col('addedby');
+    const idCol = col('spotifyid') !== -1 ? col('spotifyid') : col('trackid');
+
+    // Try to get playlist name from pending URL or file name
+    let playlistName = file.name.replace('.csv', '').replace(/_/g, ' ');
+    // Check if there's a playlist name column
+    const plNameCol = col('playlistname') !== -1 ? col('playlistname') : -1;
+
+    const newSongs = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = parseCSVLine(lines[i]);
+      if (!cols || cols.length < 2) continue;
+      const trackName = cols[trackCol] || '';
+      const artistName = cols[artistCol] || '';
+      if (!trackName) continue;
+      if (plNameCol !== -1 && cols[plNameCol]) playlistName = cols[plNameCol];
+      newSongs.push({
+        trackId: (cols[idCol] || Math.random().toString(36)).replace(/"/g, ''),
+        track: trackName,
+        artist: artistName,
+        album: cols[albumCol] || '',
+        playlist: playlistName,
+        playlistId: 'csv-' + playlistName.replace(/\s/g, '-').toLowerCase(),
+        date: '',
+        addedBy: cols[addedByCol] || '—',
+        isDuplicate: false,
+      });
+    }
+
+    if (newSongs.length === 0) { alert('No songs found in CSV!'); return; }
+
+    vaultData = loadData();
+    const playlistId = 'csv-' + playlistName.replace(/\s/g, '-').toLowerCase();
+    if (vaultData.playlists.find(p => p.id === playlistId)) {
+      alert('This playlist is already in the Vault!'); return;
+    }
+    vaultData.playlists.push({ id: playlistId, name: playlistName, date: '', trackCount: newSongs.length, addedAt: new Date().toISOString() });
+    vaultData.songs = (vaultData.songs || []).concat(newSongs);
+    saveData(vaultData);
+    allSongs = vaultData.songs;
+    markDuplicates();
+    buildStats();
+    renderTable();
+
+    // Hide the exportify hint
+    document.getElementById('exportify-hint').style.display = 'none';
+    document.getElementById('csv-divider').style.display = 'none';
+    document.getElementById('csv-upload-area').style.display = 'none';
+    document.getElementById('add-error').style.display = 'none';
+    document.getElementById('playlist-url-input').value = '';
+    document.getElementById('csv-file-input').value = '';
+    alert('✅ Added ' + newSongs.length + ' songs from ' + playlistName + '!');
+  };
+  reader.readAsText(file);
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === ',' && !inQuotes) { result.push(current.trim().replace(/^"|"$/g, '')); current = ''; }
+    else { current += ch; }
+  }
+  result.push(current.trim().replace(/^"|"$/g, ''));
+  return result;
 }
 
 // ── DUPLICATES ──
