@@ -663,6 +663,10 @@ function sortBy(col) {
 function renderTable(searchVal) {
   buildStats();
   const query = (searchVal !== undefined ? searchVal : (document.getElementById('search-input').value || '')).toLowerCase();
+  console.log('🔍 renderTable | query:', JSON.stringify(query), '| allSongs:', allSongs ? allSongs.length : 'UNDEFINED');
+  if (allSongs && allSongs.length > 0) {
+    console.log('🎵 First song track field:', JSON.stringify(allSongs[0].track), '| artist:', JSON.stringify(allSongs[0].artist));
+  }
   let songs = allSongs.filter(s => {
     if (currentFilter === 'dupes' && !s.isDuplicate) return false;
     if (query) return (s.track||'').toLowerCase().includes(query) || (s.artist||'').toLowerCase().includes(query) || (s.playlist||'').toLowerCase().includes(query) || (s.genres||'').toLowerCase().includes(query) || (s.addedBy||'').toLowerCase().includes(query);
@@ -674,6 +678,7 @@ function renderTable(searchVal) {
     const cmp = typeof va === 'number' ? va - vb : String(va).localeCompare(String(vb), undefined, { numeric: true });
     return dir === 'asc' ? cmp : -cmp;
   });
+  console.log('✅ After filter:', songs.length, 'songs match');
   const tbody = document.getElementById('table-body');
   const empty = document.getElementById('empty-state');
   if (songs.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
