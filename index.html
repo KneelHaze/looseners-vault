@@ -171,10 +171,10 @@
       <h2>Add a Looseners Playlist</h2>
       <p>Export your playlist from <a href="https://exportify.net" target="_blank">Exportify</a> and upload the CSV here. All the good stuff — genres, energy, vibe — gets saved automatically.</p>
       <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-        <p>📄 Drop a CSV here or <span>click to browse</span></p>
-        <p style="margin-top:6px;font-size:0.72rem;">Exported from exportify.net</p>
+        <p>📄 Drop one or more CSVs here or <span>click to browse</span></p>
+        <p style="margin-top:6px;font-size:0.72rem;">You can drop all 91 at once! Exported from exportify.net</p>
       </div>
-      <input type="file" id="csv-input" accept=".csv" onchange="handleCSVUpload(event)">
+      <input type="file" id="csv-input" accept=".csv" multiple onchange="handleCSVUpload(event)">
       <div class="error-msg" id="upload-error"></div>
       <p class="hint">
         <strong>How to export from Exportify:</strong><br>
@@ -206,7 +206,7 @@
           <div class="mini-drop" onclick="document.getElementById('add-csv-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleAddDrop(event)">
             📄 Drop CSV or click to browse
           </div>
-          <input type="file" id="add-csv-input" accept=".csv" onchange="handleAddCSV(event)">
+          <input type="file" id="add-csv-input" accept=".csv" multiple onchange="handleAddCSV(event)">
         </div>
       </div>
       <div id="add-error"></div>
@@ -337,10 +337,135 @@ function showTab(tab) {
 // ── DRAG & DROP ──
 function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
 function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
-function handleDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); const f = e.dataTransfer.files[0]; if (f) processCSV(f, 'upload'); }
-function handleAddDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); const f = e.dataTransfer.files[0]; if (f) processCSV(f, 'add'); }
-function handleCSVUpload(e) { if (e.target.files[0]) processCSV(e.target.files[0], 'upload'); }
-function handleAddCSV(e) { if (e.target.files[0]) processCSV(e.target.files[0], 'add'); }
+function handleDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); if (e.dataTransfer.files.length) processMultipleCSVs(Array.from(e.dataTransfer.files), 'upload'); }
+function handleAddDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); if (e.dataTransfer.files.length) processMultipleCSVs(Array.from(e.dataTransfer.files), 'add'); }
+function handleCSVUpload(e) { if (e.target.files.length) processMultipleCSVs(Array.from(e.target.files), 'upload'); }
+function handleAddCSV(e) { if (e.target.files.length) processMultipleCSVs(Array.from(e.target.files), 'add'); }
+
+async function processMultipleCSVs(files, mode) {
+  if (files.length === 1) { processCSV(files[0], mode); return; }
+
+  // Parse all CSVs first locally — no network calls yet
+  showLoading('Parsing ' + files.length + ' playlists...');
+  const allPlaylists = [];
+  const allNewSongs = [];
+  const skipped = [];
+
+  for (const file of files) {
+    const result = await parseCSVFile(file);
+    if (!result) { skipped.push(file.name); continue; }
+    const { playlist, songs } = result;
+    // Check duplicate
+    if (vaultData.playlists && vaultData.playlists.find(p => p.id === playlist.id || p.name.toLowerCase() === playlist.name.toLowerCase())) {
+      skipped.push(file.name + ' (already in Vault)'); continue;
+    }
+    allPlaylists.push(playlist);
+    allNewSongs.push(...songs);
+  }
+
+  if (allPlaylists.length === 0) {
+    alert('Nothing new to add!' + (skipped.length ? ' Skipped: ' + skipped.join(', ') : ''));
+    if (allSongs.length > 0) showMainApp(); else showUploadScreen();
+    return;
+  }
+
+  // Send all in one go
+  document.getElementById('loading-msg').textContent = 'Saving ' + allNewSongs.length + ' songs to Google Sheets... (this may take a minute)';
+
+  try {
+    const updated = await postToSheet({ action: 'addPlaylist', playlist: allPlaylists[0], songs: allNewSongs.filter(s => s.playlistId === allPlaylists[0].id) });
+    vaultData = updated;
+
+    // Send remaining playlists in batches
+    for (let i = 1; i < allPlaylists.length; i++) {
+      document.getElementById('loading-msg').textContent = 'Saving playlist ' + (i+1) + ' of ' + allPlaylists.length + '...';
+      const pl = allPlaylists[i];
+      const plSongs = allNewSongs.filter(s => s.playlistId === pl.id);
+      await postToSheet({ action: 'addPlaylist', playlist: pl, songs: plSongs });
+    }
+
+    // Final fetch
+    document.getElementById('loading-msg').textContent = 'Almost done — fetching everything...';
+    const final = await fetchVaultData();
+    vaultData = final;
+    allSongs = vaultData.songs || [];
+    markDuplicates();
+
+    if (skipped.length) alert('Done! Skipped ' + skipped.length + ' already-in-Vault playlists.');
+    showMainApp();
+  } catch(e) {
+    alert('Something went wrong: ' + e.message);
+    showMainApp();
+  }
+}
+
+async function parseCSVFile(file) {
+  try {
+    const text = await file.text();
+    const lines = text.split('\n').filter(l => l.trim());
+    if (lines.length < 2) return null;
+
+    const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z]/g, ''));
+    const col = name => headers.findIndex(h => h.includes(name));
+
+    const trackCol = col('trackname') !== -1 ? col('trackname') : col('name');
+    const artistCol = col('artistname') !== -1 ? col('artistname') : col('artist');
+    const albumCol = col('albumname') !== -1 ? col('albumname') : col('album');
+    const addedByCol = col('addedby');
+    const addedAtCol = col('addedat');
+    const idCol = col('trackuri') !== -1 ? col('trackuri') : col('spotifyid');
+    const popularityCol = col('popularity');
+    const explicitCol = col('explicit');
+    const releaseDateCol = col('releasedate');
+    const durationCol = col('durationms') !== -1 ? col('durationms') : col('duration');
+    const danceCol = col('danceability');
+    const energyCol = col('energy');
+    const tempoCol = col('tempo');
+    const valenceCol = col('valence');
+    const genreCol = col('genres') !== -1 ? col('genres') : col('genre');
+    const loudnessCol = col('loudness');
+    const instrumentalnessCol = col('instrumentalness');
+
+    let playlistName = file.name.replace('.csv', '').replace(/_/g, ' ').trim();
+    const playlistId = 'csv-' + playlistName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+    const songs = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = parseCSVLine(lines[i]);
+      if (!cols || cols.length < 2) continue;
+      const trackName = cols[trackCol] || '';
+      if (!trackName) continue;
+      const durationMs = parseInt(cols[durationCol]) || 0;
+      songs.push({
+        trackId: (cols[idCol] || '').replace('spotify:track:', '') || Math.random().toString(36),
+        track: trackName,
+        artist: cols[artistCol] || '',
+        album: cols[albumCol] || '',
+        playlist: playlistName,
+        playlistId,
+        addedBy: cols[addedByCol] || '—',
+        addedAt: cols[addedAtCol] || '',
+        popularity: parseFloat(cols[popularityCol]) || 0,
+        explicit: (cols[explicitCol] || '').toLowerCase() === 'true',
+        releaseDate: cols[releaseDateCol] || '',
+        durationMs,
+        durationFmt: formatDuration(durationMs),
+        danceability: parseFloat(cols[danceCol]) || 0,
+        energy: parseFloat(cols[energyCol]) || 0,
+        tempo: parseFloat(cols[tempoCol]) || 0,
+        valence: parseFloat(cols[valenceCol]) || 0,
+        loudness: parseFloat(cols[loudnessCol]) || 0,
+        instrumentalness: parseFloat(cols[instrumentalnessCol]) || 0,
+        genres: cols[genreCol] || '',
+        isDuplicate: false,
+      });
+    }
+
+    const totalDuration = songs.reduce((a, s) => a + (s.durationMs || 0), 0);
+    const playlist = { id: playlistId, name: playlistName, trackCount: songs.length, addedAt: new Date().toISOString(), totalDurationMs: totalDuration };
+    return { playlist, songs };
+  } catch(e) { return null; }
+}
 
 // ── CSV PROCESSING ──
 async function processCSV(file, mode) {
