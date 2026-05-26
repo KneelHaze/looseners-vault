@@ -188,6 +188,15 @@
   <!-- Loading -->
   <div id="loading"><div class="spinner"></div><div id="loading-msg">Loading...</div></div>
 
+  <!-- Error Screen -->
+  <div id="error-screen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;text-align:center;">
+    <div style="font-size:2rem;">😬</div>
+    <div style="font-family:'DM Mono',monospace;font-size:0.9rem;color:var(--text);">Couldn't connect to Google Sheets</div>
+    <div id="error-msg" style="font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--red);max-width:400px;"></div>
+    <button class="btn" onclick="loadFromSheets()" style="margin-top:8px;">↻ Try Again</button>
+    <button class="btn btn-ghost btn-sm" onclick="showUploadScreen()">Add a playlist manually</button>
+  </div>
+
   <!-- Nav Tabs -->
   <div id="nav-tabs">
     <div class="nav-tabs">
@@ -281,9 +290,20 @@ async function postToSheet(payload) {
 
 // ── INIT ──
 window.addEventListener('load', async () => {
-  showLoading('Fetching the Vault...');
+  loadFromSheets();
+});
+
+async function loadFromSheets() {
+  showLoading('Fetching the Vault from Google Sheets...');
   try {
-    const data = await fetchVaultData();
+    const res = await fetch(SCRIPT_URL + '?action=getSongs', { redirect: 'follow' });
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(parseErr) {
+      throw new Error('Could not read Google Sheets response. Try again in a moment.');
+    }
     vaultData = data;
     allSongs = vaultData.songs || [];
     markDuplicates();
@@ -293,9 +313,13 @@ window.addEventListener('load', async () => {
       showUploadScreen();
     }
   } catch(e) {
-    showUploadScreen();
+    // Show error with retry button rather than silently failing
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('upload-screen').style.display = 'none';
+    document.getElementById('error-screen').style.display = 'flex';
+    document.getElementById('error-msg').textContent = e.message || 'Unknown error';
   }
-});
+}
 
 function showLoading(msg) {
   document.getElementById('upload-screen').style.display = 'none';
