@@ -669,7 +669,7 @@ function renderTable(searchVal) {
   }
   let songs = allSongs.filter(s => {
     if (currentFilter === 'dupes' && !s.isDuplicate) return false;
-    if (query) return (s.track||'').toLowerCase().includes(query) || (s.artist||'').toLowerCase().includes(query) || (s.playlist||'').toLowerCase().includes(query) || (s.genres||'').toLowerCase().includes(query) || (s.addedBy||'').toLowerCase().includes(query);
+    if (query) { const t = v => String(v||'').toLowerCase(); return t(s.track).includes(query) || t(s.artist).includes(query) || t(s.playlist).includes(query) || t(s.genres).includes(query) || t(s.addedBy).includes(query); }
     return true;
   });
   const { col, dir } = currentSort;
