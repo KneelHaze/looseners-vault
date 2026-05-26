@@ -587,12 +587,10 @@ async function processCSV(file, mode) {
 }
 
 function msToMins(ms) {
-  // Handle case where Google Sheets may have mangled the value
-  const raw = parseFloat(ms);
-  if (!raw || isNaN(raw)) return '—';
-  // If it's a very large number it's already in ms, if small it might be seconds
-  const totalMs = raw > 100000 ? raw : raw * 1000;
-  const totalSecs = Math.floor(totalMs / 1000);
+  // Always treat as raw milliseconds from Exportify
+  const raw = parseInt(ms);
+  if (!raw || isNaN(raw) || raw <= 0) return '—';
+  const totalSecs = Math.floor(raw / 1000);
   const mins = Math.floor(totalSecs / 60);
   const secs = totalSecs % 60;
   return mins + ':' + String(secs).padStart(2, '0');
@@ -667,7 +665,7 @@ function renderTable() {
   const query = (document.getElementById('search-input').value || '').toLowerCase();
   let songs = allSongs.filter(s => {
     if (currentFilter === 'dupes' && !s.isDuplicate) return false;
-    if (query) return s.track.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query) || s.playlist.toLowerCase().includes(query) || (s.genres || '').toLowerCase().includes(query) || (s.addedBy || '').toLowerCase().includes(query);
+    if (query) return (s.track||'').toLowerCase().includes(query) || (s.artist||'').toLowerCase().includes(query) || (s.playlist||'').toLowerCase().includes(query) || (s.genres||'').toLowerCase().includes(query) || (s.addedBy||'').toLowerCase().includes(query);
     return true;
   });
   const { col, dir } = currentSort;
@@ -737,17 +735,17 @@ function renderAnalytics() {
   const topGenres = Object.entries(genreCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
 
   // Longest song
-  const longestSong = [...songs].sort((a,b) => (b.durationMs||0)-(a.durationMs||0))[0];
+  const longestSong = [...songs].sort((a,b) => parseInt(b.durationMs||0)-parseInt(a.durationMs||0))[0];
 
   // Longest/shortest song
-  const songsWithDuration = songs.filter(s => s.durationMs > 0);
-  const shortestSong = [...songsWithDuration].sort((a,b) => (a.durationMs||0)-(b.durationMs||0))[0];
+  const songsWithDuration = songs.filter(s => parseInt(s.durationMs) > 0 && parseInt(s.durationMs) < 3600000);
+  const shortestSong = [...songsWithDuration].sort((a,b) => parseInt(a.durationMs||0)-parseInt(b.durationMs||0))[0];
 
   // Longest/shortest playlist
   const plDurations = {};
   songs.forEach(s => { plDurations[s.playlist] = (plDurations[s.playlist]||0) + (s.durationMs||0); });
-  const longestPl = Object.entries(plDurations).sort((a,b)=>b[1]-a[1])[0];
-  const shortestPl = Object.entries(plDurations).sort((a,b)=>a[1]-b[1])[0];
+  const longestPl = Object.entries(plDurations).sort((a,b)=>parseInt(b[1])-parseInt(a[1]))[0];
+  const shortestPl = Object.entries(plDurations).sort((a,b)=>parseInt(a[1])-parseInt(b[1]))[0];
 
   // Most obscure (lowest avg popularity)
   const contribPop = {};
