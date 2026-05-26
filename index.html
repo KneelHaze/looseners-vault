@@ -702,7 +702,7 @@ function renderPlaylists() {
 // ── ANALYTICS ──
 function avg(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
 function pct(val) { return Math.round(val * 100); }
-function top(arr, n) { return arr.slice(0, n); }
+function topN(arr, n) { return arr.slice(0, n); }
 
 function renderAnalytics() {
   const songs = allSongs.filter(s => !s.isDuplicate || true);
