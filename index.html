@@ -7,81 +7,75 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #111;
-    --border: #222;
-    --green: #1DB954;
-    --red: #ff4444;
-    --text: #e8e8e8;
-    --muted: #666;
-    --card: #161616;
+    --bg: #0a0a0a; --surface: #111; --border: #222; --green: #1DB954;
+    --red: #ff4444; --amber: #f5a623; --blue: #4a9eff; --purple: #a855f7;
+    --text: #e8e8e8; --muted: #666; --card: #161616;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background-image: linear-gradient(rgba(29,185,84,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(29,185,84,0.03) 1px, transparent 1px);
-    background-size: 40px 40px; pointer-events: none; z-index: 0;
-  }
-  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(29,185,84,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(29,185,84,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
   header { border-bottom: 1px solid var(--border); padding: 28px 0 24px; display: flex; align-items: baseline; gap: 16px; }
   .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--green); line-height: 1; }
   .logo span { color: var(--text); }
   .tagline { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-  .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-  #user-badge { display: none; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px 6px 8px; font-size: 0.82rem; }
-  #user-avatar { width: 24px; height: 24px; border-radius: 50%; }
-  #user-name { color: var(--muted); }
-  .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--green); color: #000; font-weight: 500; font-size: 0.9rem; border: none; border-radius: 100px; padding: 12px 28px; cursor: pointer; transition: background 0.15s, transform 0.1s; text-decoration: none; font-family: 'DM Sans', sans-serif; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--green); color: #000; font-weight: 500; font-size: 0.9rem; border: none; border-radius: 100px; padding: 12px 28px; cursor: pointer; transition: background 0.15s, transform 0.1s; font-family: 'DM Sans', sans-serif; }
   .btn:hover { background: #1ed760; transform: translateY(-1px); }
   .btn:active { transform: translateY(0); }
   .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
   .btn-ghost:hover { background: var(--surface); transform: none; }
   .btn-sm { padding: 8px 16px; font-size: 0.82rem; }
-  /* Setup */
-  #setup-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; }
-  .setup-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 48px 40px; max-width: 480px; width: 100%; text-align: center; }
-  .setup-icon { font-size: 3rem; margin-bottom: 20px; display: block; }
-  .setup-card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; margin-bottom: 8px; }
-  .setup-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; margin-bottom: 28px; }
-  .field { text-align: left; margin-bottom: 16px; }
-  .field label { display: block; font-family: 'DM Mono', monospace; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
-  .field input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.88rem; outline: none; transition: border-color 0.2s; }
-  .field input:focus { border-color: var(--green); }
-  .field input::placeholder { color: #444; }
-  .hint { font-size: 0.78rem; color: var(--muted); margin-top: 16px; line-height: 1.5; }
+  .btn-amber { background: var(--amber); color: #000; }
+  .btn-amber:hover { background: #f7b93e; }
+
+  /* ── UPLOAD SCREEN ── */
+  #upload-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; }
+  .upload-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 48px 40px; max-width: 520px; width: 100%; text-align: center; }
+  .upload-icon { font-size: 3rem; margin-bottom: 20px; display: block; }
+  .upload-card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; margin-bottom: 8px; }
+  .upload-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; margin-bottom: 28px; }
+  .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 32px; cursor: pointer; transition: all 0.2s; margin-bottom: 16px; }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--green); background: rgba(29,185,84,0.04); }
+  .drop-zone p { color: var(--muted); font-size: 0.85rem; font-family: 'DM Mono', monospace; }
+  .drop-zone p span { color: var(--green); }
+  #csv-input { display: none; }
+  .hint { font-size: 0.78rem; color: var(--muted); line-height: 1.6; margin-top: 16px; }
   .hint a { color: var(--green); text-decoration: none; }
+  .hint a:hover { text-decoration: underline; }
   .error-msg { background: rgba(255,68,68,0.08); border: 1px solid rgba(255,68,68,0.25); border-radius: 8px; padding: 12px 16px; font-size: 0.85rem; color: var(--red); margin-top: 12px; display: none; }
-  /* Loading */
+
+  /* ── LOADING ── */
   #loading { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; }
   .spinner { width: 40px; height: 40px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   #loading-msg { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--muted); }
-  /* Dashboard */
-  #dashboard { display: none; padding: 32px 0 64px; }
-  /* Add playlist panel */
-  .add-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 28px; display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-  .add-panel-field { flex: 1; min-width: 280px; }
-  .add-panel-field label { display: block; font-family: 'DM Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
-  .add-panel-field input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
-  .add-panel-field input:focus { border-color: var(--green); }
-  .add-panel-field input::placeholder { color: #444; }
-  #add-error { width: 100%; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--red); display: none; padding-top: 4px; }
-  .exportify-hint { width: 100%; margin-top: 10px; display: none; background: rgba(29,185,84,0.06); border: 1px solid rgba(29,185,84,0.2); border-radius: 8px; padding: 12px 16px; font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
-  .exportify-hint strong { color: var(--text); }
-  .exportify-hint a { color: var(--green); text-decoration: none; font-weight: 500; }
-  .exportify-hint a:hover { text-decoration: underline; }
-  .divider { width: 100%; display: flex; align-items: center; gap: 12px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin: 4px 0; }
-  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .csv-upload-area { width: 100%; border: 1px dashed var(--border); border-radius: 8px; padding: 14px; text-align: center; cursor: pointer; transition: border-color 0.2s; font-size: 0.82rem; color: var(--muted); font-family: 'DM Mono', monospace; }
-  .csv-upload-area:hover { border-color: var(--green); color: var(--text); }
-  #csv-file-input { display: none; }
-  /* Stats */
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+
+  /* ── NAV TABS ── */
+  #nav-tabs { display: none; }
+  .nav-tabs { display: flex; gap: 4px; margin: 24px 0 0; border-bottom: 1px solid var(--border); }
+  .nav-tab { font-family: 'DM Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 16px; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; }
+  .nav-tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .nav-tab:hover:not(.active) { color: var(--text); }
+
+  /* ── STATS ROW ── */
+  .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
   .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
   .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--green); line-height: 1; margin-bottom: 4px; }
   .stat-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
-  /* Toolbar */
+
+  /* ── ADD PANEL ── */
+  .add-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 28px; }
+  .add-panel-top { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .add-panel-field { flex: 1; min-width: 280px; }
+  .add-panel-field label { display: block; font-family: 'DM Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+  .mini-drop { border: 1px dashed var(--border); border-radius: 8px; padding: 10px 14px; cursor: pointer; transition: all 0.2s; font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--muted); text-align: center; }
+  .mini-drop:hover { border-color: var(--green); color: var(--text); }
+  #add-csv-input { display: none; }
+  #add-error { width: 100%; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--red); display: none; padding-top: 8px; }
+  .exportify-tip { width: 100%; margin-top: 10px; font-size: 0.78rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .exportify-tip a { color: var(--green); text-decoration: none; }
+
+  /* ── TABLE ── */
   .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
   .search-box { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.85rem; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s; }
   .search-box:focus { border-color: var(--green); }
@@ -89,7 +83,6 @@
   .filter-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
   .filter-btn.active { background: var(--green); border-color: var(--green); color: #000; font-weight: 500; }
   .filter-btn:hover:not(.active) { border-color: #444; color: var(--text); }
-  /* Table */
   .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
   table { width: 100%; border-collapse: collapse; }
   thead th { text-align: left; padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--surface); cursor: pointer; user-select: none; white-space: nowrap; }
@@ -107,7 +100,8 @@
   .added-by { font-family: 'DM Mono', monospace; font-size: 0.78rem; padding: 3px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); white-space: nowrap; }
   .dup-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'DM Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--red); background: rgba(255,68,68,0.12); border: 1px solid rgba(255,68,68,0.25); border-radius: 4px; padding: 3px 7px; }
   .empty { text-align: center; padding: 48px 24px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.85rem; }
-  /* Playlists tab */
+
+  /* ── PLAYLISTS TAB ── */
   #playlists-tab { display: none; padding: 32px 0 64px; }
   .pl-grid { display: grid; gap: 10px; }
   .pl-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 16px; }
@@ -116,18 +110,46 @@
   .pl-meta { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
   .pl-del { background: none; border: 1px solid #333; color: var(--muted); border-radius: 6px; padding: 5px 10px; font-size: 0.75rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
   .pl-del:hover { border-color: var(--red); color: var(--red); }
-  /* Nav tabs */
-  .nav-tabs { display: flex; gap: 4px; margin: 24px 0 0; border-bottom: 1px solid var(--border); }
-  .nav-tab { font-family: 'DM Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 16px; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; }
-  .nav-tab.active { color: var(--green); border-bottom-color: var(--green); }
-  .nav-tab:hover:not(.active) { color: var(--text); }
-  .migrate-banner { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.3); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: none; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .migrate-banner p { font-size: 0.85rem; color: var(--text); flex: 1; min-width: 200px; }
-  .migrate-banner p span { color: #f5a623; font-weight: 500; }
-  .btn-amber { background: #f5a623; color: #000; }
-  .btn-amber:hover { background: #f7b93e; }
-  @media (max-width: 700px) { .stats-row { grid-template-columns: 1fr 1fr; } td:nth-child(4), th:nth-child(4) { display: none; } }
-  @media (max-width: 500px) { td:nth-child(3), th:nth-child(3) { display: none; } .setup-card { padding: 32px 24px; } }
+
+  /* ── ANALYTICS TAB ── */
+  #analytics-tab { display: none; padding: 32px 0 64px; }
+  .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .analytics-grid.wide { grid-template-columns: 1fr; }
+  .analytics-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .a-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+  .a-card h3 { font-family: 'DM Mono', monospace; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 16px; }
+  .a-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .a-row:last-child { margin-bottom: 0; }
+  .a-label { font-size: 0.85rem; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .a-label .sub { font-size: 0.75rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .a-bar-wrap { width: 140px; flex-shrink: 0; }
+  .a-bar { height: 6px; border-radius: 3px; background: var(--green); transition: width 0.3s; }
+  .a-bar.red { background: var(--red); }
+  .a-bar.amber { background: var(--amber); }
+  .a-bar.blue { background: var(--blue); }
+  .a-bar.purple { background: var(--purple); }
+  .a-val { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); width: 40px; text-align: right; flex-shrink: 0; }
+  .a-big { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; color: var(--green); line-height: 1; margin-bottom: 4px; }
+  .a-big-label { font-size: 0.82rem; color: var(--muted); }
+  .a-big-sub { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+  .contributor-block { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .contributor-block:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .contributor-name { font-weight: 500; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .contributor-name .count { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+  .genre-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .genre-chip { font-family: 'DM Mono', monospace; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+  .guilty-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
+  .guilty-row:last-child { border-bottom: none; }
+  .guilty-pop { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--amber); width: 40px; flex-shrink: 0; }
+  .guilty-info { flex: 1; }
+  .guilty-info .track { font-weight: 500; font-size: 0.88rem; }
+  .guilty-info .artist { font-size: 0.78rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .guilty-by { font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+  .no-data { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.82rem; text-align: center; padding: 24px; }
+
+  @media (max-width: 900px) { .analytics-grid, .analytics-grid.three { grid-template-columns: 1fr; } }
+  @media (max-width: 700px) { .stats-row { grid-template-columns: 1fr 1fr 1fr; } td:nth-child(5), th:nth-child(5), td:nth-child(6), th:nth-child(6) { display: none; } }
+  @media (max-width: 500px) { .stats-row { grid-template-columns: 1fr 1fr; } .upload-card { padding: 32px 24px; } }
 </style>
 </head>
 <body>
@@ -137,39 +159,28 @@
       <div class="logo">Looseners<span> Vault</span></div>
       <div class="tagline">The list of all loose lists</div>
     </div>
-    <div class="header-right">
-      <div id="user-badge">
-        <img id="user-avatar" src="" alt="">
-        <span id="user-name"></span>
-      </div>
-      <button class="btn btn-ghost btn-sm" id="logout-btn" style="display:none;" onclick="logout()">Sign out</button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
+      <button class="btn btn-ghost btn-sm" id="add-more-btn" style="display:none;" onclick="showUploadScreen()">+ Add Playlist</button>
     </div>
   </header>
 
-  <!-- Setup -->
-  <div id="setup-screen">
-    <div class="setup-card">
-      <span class="setup-icon">🎵</span>
-      <h2>Connect Spotify</h2>
-      <p>Paste your Spotify Client ID below to connect.</p>
-      <div class="field">
-        <label>Spotify Client ID</label>
-        <input type="text" id="client-id-input" placeholder="e.g. a1b2c3d4e5f6..." autocomplete="off" spellcheck="false">
+  <!-- Upload Screen -->
+  <div id="upload-screen">
+    <div class="upload-card">
+      <span class="upload-icon">🎵</span>
+      <h2>Add a Looseners Playlist</h2>
+      <p>Export your playlist from <a href="https://exportify.net" target="_blank">Exportify</a> and upload the CSV here. All the good stuff — genres, energy, vibe — gets saved automatically.</p>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <p>📄 Drop a CSV here or <span>click to browse</span></p>
+        <p style="margin-top:6px;font-size:0.72rem;">Exported from exportify.net</p>
       </div>
-      <div class="field">
-        <label>Redirect URI (add this to your Spotify app)</label>
-        <input type="text" id="redirect-uri-display" readonly style="color:var(--green);cursor:pointer;" title="Click to copy" onclick="copyRedirect()" value="https://kneelhaze.github.io/looseners-vault/">
-      </div>
-      <div class="error-msg" id="setup-error"></div>
-      <button class="btn" style="width:100%;justify-content:center;margin-top:8px;" onclick="startAuth()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.35-1.434-5.305-1.76-8.786-.963-.335.077-.67-.133-.746-.469-.077-.336.132-.67.469-.746 3.809-.87 7.077-.496 9.713 1.115.293.18.386.563.207.856zm1.223-2.723c-.226.367-.706.482-1.072.257-2.687-1.652-6.785-2.131-9.965-1.166-.413.127-.848-.106-.973-.517-.125-.413.108-.848.517-.973 3.632-1.102 8.147-.568 11.236 1.328.366.226.48.707.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71c-.493.15-1.016-.129-1.166-.623-.149-.495.13-1.016.624-1.166 3.552-1.077 9.457-.869 13.19 1.35.445.264.59.838.327 1.282-.264.443-.838.59-1.282.325z"/></svg>
-        Connect with Spotify
-      </button>
+      <input type="file" id="csv-input" accept=".csv" onchange="handleCSVUpload(event)">
+      <div class="error-msg" id="upload-error"></div>
       <p class="hint">
-        1. Go to <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a><br>
-        2. Open your app → copy the <strong>Client ID</strong><br>
-        3. In app settings, add the <strong>Redirect URI</strong> shown above<br>
-        4. Hit connect 🎉
+        <strong>How to export from Exportify:</strong><br>
+        1. Go to <a href="https://exportify.net" target="_blank">exportify.net</a> and log in with Spotify<br>
+        2. Find the Looseners playlist → click <strong>Export</strong><br>
+        3. Upload the downloaded CSV here
       </p>
     </div>
   </div>
@@ -177,50 +188,39 @@
   <!-- Loading -->
   <div id="loading"><div class="spinner"></div><div id="loading-msg">Loading...</div></div>
 
-  <!-- Nav tabs (shown when logged in) -->
-  <div id="nav-tabs" style="display:none;">
+  <!-- Nav Tabs -->
+  <div id="nav-tabs">
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="showTab('songs')">All Songs</button>
+      <button class="nav-tab" onclick="showTab('analytics')">Analytics</button>
       <button class="nav-tab" onclick="showTab('playlists')">Playlists</button>
     </div>
   </div>
 
-  <!-- Migration banner -->
-  <div class="migrate-banner" id="migrate-banner">
-    <p>🎵 We found <span id="migrate-count"></span> songs from your previous session in this browser. Want to move them up to Google Sheets so everyone can see them?</p>
-    <button class="btn btn-amber btn-sm" onclick="migrateData()">Move to Google Sheets</button>
-    <button class="btn btn-ghost btn-sm" onclick="dismissMigration()">Dismiss</button>
-  </div>
-
-  <!-- Songs tab -->
-  <div id="dashboard">
+  <!-- Songs Tab -->
+  <div id="songs-tab" style="display:none;padding:32px 0 64px;">
     <div class="add-panel">
-      <div class="add-panel-field">
-        <label>Add a Looseners playlist — paste a Spotify link</label>
-        <input type="text" id="playlist-url-input" placeholder="https://open.spotify.com/playlist/...">
+      <div class="add-panel-top">
+        <div class="add-panel-field">
+          <label>Add another Looseners playlist</label>
+          <div class="mini-drop" onclick="document.getElementById('add-csv-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleAddDrop(event)">
+            📄 Drop CSV or click to browse
+          </div>
+          <input type="file" id="add-csv-input" accept=".csv" onchange="handleAddCSV(event)">
+        </div>
       </div>
-      <button class="btn" onclick="addPlaylist()" id="add-btn">+ Add to Vault</button>
       <div id="add-error"></div>
-      <div class="exportify-hint" id="exportify-hint">
-        <strong>Spotify won't let us in to this one.</strong> No sweat — use Exportify instead:<br>
-        1. Click <a id="exportify-link" href="https://exportify.net" target="_blank">Open in Exportify ↗</a> (log in with Spotify if needed)<br>
-        2. Find the playlist, click <strong>Export</strong> → saves a CSV file<br>
-        3. Upload it below 👇
-      </div>
-      <div class="divider" id="csv-divider" style="display:none;">or upload a CSV from Exportify</div>
-      <div class="csv-upload-area" id="csv-upload-area" style="display:none;" onclick="document.getElementById('csv-file-input').click()">
-        📄 Click to upload Exportify CSV
-      </div>
-      <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSV(event)">
+      <div class="exportify-tip">Export from <a href="https://exportify.net" target="_blank">exportify.net</a> → log in with Spotify → find playlist → Export</div>
     </div>
     <div class="stats-row">
       <div class="stat-card"><div class="stat-val" id="stat-songs">0</div><div class="stat-label">Total Songs</div></div>
       <div class="stat-card"><div class="stat-val" id="stat-playlists">0</div><div class="stat-label">Looseners</div></div>
       <div class="stat-card"><div class="stat-val" id="stat-dupes" style="color:var(--red)">0</div><div class="stat-label">Repeats</div></div>
       <div class="stat-card"><div class="stat-val" id="stat-artists">0</div><div class="stat-label">Artists</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-genres">0</div><div class="stat-label">Genres</div></div>
     </div>
     <div class="toolbar">
-      <input class="search-box" id="search-input" type="text" placeholder="Search songs, artists..." oninput="renderTable()">
+      <input class="search-box" id="search-input" type="text" placeholder="Search songs, artists, genres..." oninput="renderTable()">
       <button class="filter-btn active" id="filter-all" onclick="setFilter('all')">All</button>
       <button class="filter-btn" id="filter-dupes" onclick="setFilter('dupes')">🔴 Repeats only</button>
     </div>
@@ -232,19 +232,28 @@
             <th onclick="sortBy('artist')" id="th-artist">Artist <span class="sort-icon">↕</span></th>
             <th onclick="sortBy('playlist')" id="th-playlist">Loosener <span class="sort-icon">↕</span></th>
             <th onclick="sortBy('addedBy')" id="th-addedBy">Added By <span class="sort-icon">↕</span></th>
+            <th onclick="sortBy('popularity')" id="th-popularity">Pop <span class="sort-icon">↕</span></th>
+            <th onclick="sortBy('energy')" id="th-energy">Energy <span class="sort-icon">↕</span></th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody id="table-body"></tbody>
       </table>
-      <div class="empty" id="empty-state" style="display:none;">No songs yet — paste a playlist link above to get started!</div>
+      <div class="empty" id="empty-state" style="display:none;">No songs found.</div>
     </div>
   </div>
 
-  <!-- Playlists tab -->
+  <!-- Analytics Tab -->
+  <div id="analytics-tab">
+    <div id="analytics-content" style="padding:32px 0 64px;"></div>
+  </div>
+
+  <!-- Playlists Tab -->
   <div id="playlists-tab">
-    <div class="pl-grid" id="pl-grid"></div>
-    <div class="empty" id="pl-empty" style="display:none;">No playlists added yet.</div>
+    <div style="padding:32px 0 64px;">
+      <div class="pl-grid" id="pl-grid"></div>
+      <div class="empty" id="pl-empty" style="display:none;">No playlists added yet.</div>
+    </div>
   </div>
 </div>
 
@@ -254,349 +263,185 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoJlUGdPg0tIcEb4OBS
 const SECRET = 'looseners2024';
 
 // ── STATE ──
-let accessToken = null;
 let vaultData = { playlists: [], songs: [] };
 let allSongs = [];
 let currentSort = { col: 'playlist', dir: 'desc' };
 let currentFilter = 'all';
-let currentTab = 'songs';
 
 // ── GOOGLE SHEETS ──
 async function fetchVaultData() {
   const res = await fetch(SCRIPT_URL + '?action=getSongs');
-  const data = await res.json();
-  return data;
+  return res.json();
 }
-
 async function postToSheet(payload) {
-  // no-cors POST to avoid preflight issues with Google Apps Script
-  await fetch(SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    body: JSON.stringify({ ...payload, secret: SECRET })
-  });
-  // Give the sheet a moment to update then re-fetch
+  await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ ...payload, secret: SECRET }) });
   await new Promise(r => setTimeout(r, 2500));
   return fetchVaultData();
 }
 
-// ── REDIRECT URI ──
-function getRedirectUri() { return window.location.origin + window.location.pathname; }
-
 // ── INIT ──
 window.addEventListener('load', async () => {
-  document.getElementById('redirect-uri-display').value = getRedirectUri();
-  const savedClientId = localStorage.getItem('sp_client_id');
-  if (savedClientId) document.getElementById('client-id-input').value = savedClientId;
-
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get('code');
-  const stateParam = params.get('state');
-  const error = params.get('error');
-
-  if (error) {
-    showSetup();
-    showError('Spotify said no: ' + error + '. Check your Redirect URI matches exactly.');
-    window.history.replaceState({}, '', window.location.pathname);
-    return;
-  }
-
-  if (code && stateParam) {
-    window.history.replaceState({}, '', window.location.pathname);
-    try {
-      const state = JSON.parse(atob(stateParam));
-      if (state.clientId) localStorage.setItem('sp_client_id', state.clientId);
-      document.getElementById('client-id-input').value = state.clientId || '';
-      await exchangeCode(code, state.verifier, state.clientId);
-    } catch(e) { showSetup(); showError('Auth failed: ' + e.message); }
-    return;
-  }
-  showSetup();
-});
-
-function showSetup() {
-  document.getElementById('setup-screen').style.display = 'flex';
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('playlists-tab').style.display = 'none';
-  document.getElementById('nav-tabs').style.display = 'none';
-}
-function showLoading(msg) {
-  document.getElementById('setup-screen').style.display = 'none';
-  document.getElementById('loading').style.display = 'flex';
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('playlists-tab').style.display = 'none';
-  document.getElementById('nav-tabs').style.display = 'none';
-  document.getElementById('loading-msg').textContent = msg || 'Loading...';
-}
-function showDashboard() {
-  document.getElementById('setup-screen').style.display = 'none';
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('nav-tabs').style.display = 'block';
-  showTab(currentTab);
-}
-function showTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.nav-tab').forEach((t, i) => {
-    t.classList.toggle('active', (i === 0 && tab === 'songs') || (i === 1 && tab === 'playlists'));
-  });
-  document.getElementById('dashboard').style.display = tab === 'songs' ? 'block' : 'none';
-  document.getElementById('playlists-tab').style.display = tab === 'playlists' ? 'block' : 'none';
-  if (tab === 'songs') renderTable();
-  if (tab === 'playlists') renderPlaylists();
-}
-function showError(msg) {
-  const el = document.getElementById('setup-error');
-  el.textContent = msg; el.style.display = 'block';
-}
-function copyRedirect() {
-  const el = document.getElementById('redirect-uri-display');
-  navigator.clipboard.writeText(el.value).then(() => {
-    const orig = el.value; el.value = '✓ Copied!';
-    setTimeout(() => el.value = orig, 1500);
-  });
-}
-
-// ── PKCE ──
-function generateVerifier() {
-  const arr = new Uint8Array(32); crypto.getRandomValues(arr);
-  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-async function generateChallenge(verifier) {
-  const data = new TextEncoder().encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-async function startAuth() {
-  const clientId = document.getElementById('client-id-input').value.trim();
-  if (!clientId) { showError('Please enter your Client ID.'); return; }
-  document.getElementById('setup-error').style.display = 'none';
-  const verifier = generateVerifier();
-  const challenge = await generateChallenge(verifier);
-  const state = btoa(JSON.stringify({ verifier, clientId }));
-  const params = new URLSearchParams({
-    client_id: clientId, response_type: 'code',
-    redirect_uri: getRedirectUri(), code_challenge_method: 'S256',
-    code_challenge: challenge, state, scope: 'playlist-read-private playlist-read-collaborative user-read-private',
-    show_dialog: 'false',
-  });
-  window.location = 'https://accounts.spotify.com/authorize?' + params;
-}
-async function exchangeCode(code, verifier, clientId) {
-  showLoading('Connecting to Spotify...');
-  const res = await fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: getRedirectUri(), client_id: clientId, code_verifier: verifier })
-  });
-  if (!res.ok) { showSetup(); showError('Token exchange failed. Make sure the Redirect URI matches exactly: ' + getRedirectUri()); return; }
-  const data = await res.json();
-  accessToken = data.access_token;
-  // Get user profile
-  const me = await api('/me');
-  const badge = document.getElementById('user-badge');
-  badge.style.display = 'flex';
-  document.getElementById('user-name').textContent = me.display_name || me.id;
-  if (me.images && me.images[0]) document.getElementById('user-avatar').src = me.images[0].url;
-  document.getElementById('logout-btn').style.display = 'inline-flex';
-  // Fetch data from Google Sheets
-  showLoading('Fetching the Vault from Google Sheets...');
+  showLoading('Fetching the Vault...');
   try {
     const data = await fetchVaultData();
     vaultData = data;
     allSongs = vaultData.songs || [];
+    markDuplicates();
+    if (allSongs.length > 0) {
+      showMainApp();
+    } else {
+      showUploadScreen();
+    }
   } catch(e) {
-    console.warn('Could not fetch from Google Sheets:', e);
-    vaultData = { playlists: [], songs: [] };
-    allSongs = [];
+    showUploadScreen();
   }
-  markDuplicates();
-  showDashboard();
-  checkForLocalData();
+});
+
+function showLoading(msg) {
+  document.getElementById('upload-screen').style.display = 'none';
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('nav-tabs').style.display = 'none';
+  document.getElementById('songs-tab').style.display = 'none';
+  document.getElementById('analytics-tab').style.display = 'none';
+  document.getElementById('playlists-tab').style.display = 'none';
+  document.getElementById('loading-msg').textContent = msg || 'Loading...';
 }
-function logout() {
-  accessToken = null;
-  document.getElementById('user-badge').style.display = 'none';
-  document.getElementById('logout-btn').style.display = 'none';
-  showSetup();
+function showUploadScreen() {
+  document.getElementById('upload-screen').style.display = 'flex';
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('nav-tabs').style.display = 'none';
+  document.getElementById('songs-tab').style.display = 'none';
+  document.getElementById('analytics-tab').style.display = 'none';
+  document.getElementById('playlists-tab').style.display = 'none';
+  document.getElementById('add-more-btn').style.display = 'none';
+}
+function showMainApp() {
+  document.getElementById('upload-screen').style.display = 'none';
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('nav-tabs').style.display = 'block';
+  document.getElementById('add-more-btn').style.display = 'inline-flex';
+  showTab('songs');
+}
+function showTab(tab) {
+  document.querySelectorAll('.nav-tab').forEach((t, i) => {
+    t.classList.toggle('active', ['songs','analytics','playlists'][i] === tab);
+  });
+  document.getElementById('songs-tab').style.display = tab === 'songs' ? 'block' : 'none';
+  document.getElementById('analytics-tab').style.display = tab === 'analytics' ? 'block' : 'none';
+  document.getElementById('playlists-tab').style.display = tab === 'playlists' ? 'block' : 'none';
+  if (tab === 'songs') renderTable();
+  if (tab === 'analytics') renderAnalytics();
+  if (tab === 'playlists') renderPlaylists();
 }
 
-// ── SPOTIFY API ──
-async function api(endpoint) {
-  const res = await fetch('https://api.spotify.com/v1' + endpoint, { headers: { Authorization: 'Bearer ' + accessToken } });
-  if (!res.ok) throw new Error('Spotify API error: ' + res.status + ' on ' + endpoint);
-  return res.json();
-}
+// ── DRAG & DROP ──
+function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function handleDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); const f = e.dataTransfer.files[0]; if (f) processCSV(f, 'upload'); }
+function handleAddDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); const f = e.dataTransfer.files[0]; if (f) processCSV(f, 'add'); }
+function handleCSVUpload(e) { if (e.target.files[0]) processCSV(e.target.files[0], 'upload'); }
+function handleAddCSV(e) { if (e.target.files[0]) processCSV(e.target.files[0], 'add'); }
 
-// ── ADD PLAYLIST ──
-async function addPlaylist() {
-  const input = document.getElementById('playlist-url-input').value.trim();
-  const errEl = document.getElementById('add-error');
+// ── CSV PROCESSING ──
+async function processCSV(file, mode) {
+  const errEl = document.getElementById(mode === 'upload' ? 'upload-error' : 'add-error');
   errEl.style.display = 'none';
 
-  if (!input) { errEl.textContent = 'Paste a Spotify playlist link first!'; errEl.style.display = 'block'; return; }
-  if (!accessToken) { errEl.textContent = 'Not connected to Spotify — try refreshing.'; errEl.style.display = 'block'; return; }
+  const text = await file.text();
+  const lines = text.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { errEl.textContent = 'CSV looks empty!'; errEl.style.display = 'block'; return; }
 
-  // Extract playlist ID from URL
-  const match = input.match(/playlist\/([a-zA-Z0-9]+)/);
-  if (!match) { errEl.textContent = 'That doesn\'t look like a Spotify playlist link. Try copying the link from Spotify.'; errEl.style.display = 'block'; return; }
-  const playlistId = match[1];
+  const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z]/g, ''));
+  const col = name => headers.findIndex(h => h.includes(name));
 
-  // Check for duplicate playlist
-  if (vaultData.playlists && vaultData.playlists.find(p => p.id === playlistId)) {
+  const trackCol = col('trackname') !== -1 ? col('trackname') : col('name');
+  const artistCol = col('artistname') !== -1 ? col('artistname') : col('artist');
+  const albumCol = col('albumname') !== -1 ? col('albumname') : col('album');
+  const addedByCol = col('addedby');
+  const addedAtCol = col('addedat');
+  const idCol = col('trackuri') !== -1 ? col('trackuri') : col('spotifyid');
+  const popularityCol = col('popularity');
+  const explicitCol = col('explicit');
+  const releaseDateCol = col('releasedate');
+  const durationCol = col('durationms') !== -1 ? col('durationms') : col('duration');
+  const danceCol = col('danceability');
+  const energyCol = col('energy');
+  const tempoCol = col('tempo');
+  const valenceCol = col('valence');
+  const genreCol = col('genres') !== -1 ? col('genres') : col('genre');
+  const loudnessCol = col('loudness');
+  const instrumentalnessCol = col('instrumentalness');
+
+  // Get playlist name from file name
+  let playlistName = file.name.replace('.csv', '').replace(/_/g, ' ').trim();
+  const playlistId = 'csv-' + playlistName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+  // Check for duplicate
+  if (vaultData.playlists && vaultData.playlists.find(p => p.id === playlistId || p.name.toLowerCase() === playlistName.toLowerCase())) {
     errEl.textContent = '⚠ This playlist is already in the Vault!'; errEl.style.display = 'block'; return;
   }
 
-  const btn = document.getElementById('add-btn');
-  btn.textContent = 'Loading...'; btn.disabled = true;
+  const newSongs = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = parseCSVLine(lines[i]);
+    if (!cols || cols.length < 2) continue;
+    const trackName = cols[trackCol] || '';
+    if (!trackName) continue;
 
-  try {
-    // Fetch playlist details
-    const pl = await api('/playlists/' + playlistId);
-
-    // Fetch all items
-    let items = [];
-    let nextUrl = '/playlists/' + playlistId + '/items?limit=100';
-    while (nextUrl) {
-      const page = await api(nextUrl);
-      items = items.concat(page.items || []);
-      nextUrl = page.next ? page.next.replace('https://api.spotify.com/v1', '') : null;
-    }
-
-    // Parse date from playlist name
-    const dateMatch = pl.name.match(/(\w+\s*['\u2019]?\s*\d{2,4}|\w+\s+\d{4})/i);
-    const playlistDate = dateMatch ? dateMatch[0].trim() : '';
-
-    // Build song entries
-    const newSongs = [];
-    for (const item of items) {
-      if (!item.item && !item.track) continue;
-      const track = item.item || item.track;
-      if (!track || !track.name) continue;
-      newSongs.push({
-        trackId: track.id || Math.random().toString(36),
-        track: track.name,
-        artist: (track.artists || []).map(a => a.name).join(', '),
-        album: track.album?.name || '',
-        playlist: pl.name,
-        playlistId: pl.id,
-        date: playlistDate,
-        addedBy: item.added_by?.id || '—',
-        isDuplicate: false,
-      });
-    }
-
-    // Save to Google Sheets
-    const playlist = { id: pl.id, name: pl.name, date: playlistDate, trackCount: newSongs.length, addedAt: new Date().toISOString() };
-    btn.textContent = 'Saving to Sheets...';
-    const updated = await postToSheet({ action: 'addPlaylist', playlist, songs: newSongs });
-    vaultData = updated;
-    allSongs = vaultData.songs || [];
-    markDuplicates();
-    buildStats();
-    renderTable();
-    document.getElementById('playlist-url-input').value = '';
-    errEl.style.display = 'none';
-
-  } catch(e) {
-    if (e.message.includes('403')) {
-      errEl.textContent = "Spotify won't share this playlist's tracks with us.";
-      errEl.style.display = 'block';
-      // Show Exportify hint with correct link
-      const hint = document.getElementById('exportify-hint');
-      const link = document.getElementById('exportify-link');
-      const playlistUrl = document.getElementById('playlist-url-input').value.trim();
-      link.href = 'https://exportify.net';
-      hint.style.display = 'block';
-      document.getElementById('csv-divider').style.display = 'flex';
-      document.getElementById('csv-upload-area').style.display = 'block';
-      // Store the playlist URL for later use with CSV
-      window._pendingPlaylistUrl = playlistUrl;
-    } else {
-      errEl.textContent = 'Could not load playlist: ' + e.message;
-      errEl.style.display = 'block';
-    }
+    const durationMs = parseInt(cols[durationCol]) || 0;
+    newSongs.push({
+      trackId: (cols[idCol] || '').replace('spotify:track:', '') || Math.random().toString(36),
+      track: trackName,
+      artist: cols[artistCol] || '',
+      album: cols[albumCol] || '',
+      playlist: playlistName,
+      playlistId,
+      addedBy: cols[addedByCol] || '—',
+      addedAt: cols[addedAtCol] || '',
+      popularity: parseFloat(cols[popularityCol]) || 0,
+      explicit: (cols[explicitCol] || '').toLowerCase() === 'true',
+      releaseDate: cols[releaseDateCol] || '',
+      durationMs,
+      durationFmt: formatDuration(durationMs),
+      danceability: parseFloat(cols[danceCol]) || 0,
+      energy: parseFloat(cols[energyCol]) || 0,
+      tempo: parseFloat(cols[tempoCol]) || 0,
+      valence: parseFloat(cols[valenceCol]) || 0,
+      loudness: parseFloat(cols[loudnessCol]) || 0,
+      instrumentalness: parseFloat(cols[instrumentalnessCol]) || 0,
+      genres: cols[genreCol] || '',
+      isDuplicate: false,
+    });
   }
 
-  btn.textContent = '+ Add to Vault'; btn.disabled = false;
-}
+  if (newSongs.length === 0) { errEl.textContent = 'No songs found in CSV!'; errEl.style.display = 'block'; return; }
 
-// ── CSV IMPORT (Exportify) ──
-async function handleCSV(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async function(e) {
-    const text = e.target.result;
-    const lines = text.split('\n');
-    if (lines.length < 2) { alert('CSV looks empty!'); return; }
+  const totalDuration = newSongs.reduce((a, s) => a + (s.durationMs || 0), 0);
+  const playlist = { id: playlistId, name: playlistName, trackCount: newSongs.length, addedAt: new Date().toISOString(), totalDurationMs: totalDuration };
 
-    // Parse header row
-    const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z]/g, ''));
-    const col = name => headers.indexOf(name);
-    const trackCol = col('trackname') !== -1 ? col('trackname') : col('name');
-    const artistCol = col('artistname') !== -1 ? col('artistname') : col('artist');
-    const albumCol = col('albumname') !== -1 ? col('albumname') : col('album');
-    const addedByCol = col('addedby');
-    const idCol = col('spotifyid') !== -1 ? col('spotifyid') : col('trackid');
-
-    // Try to get playlist name from pending URL or file name
-    let playlistName = file.name.replace('.csv', '').replace(/_/g, ' ');
-    // Check if there's a playlist name column
-    const plNameCol = col('playlistname') !== -1 ? col('playlistname') : -1;
-
-    const newSongs = [];
-    for (let i = 1; i < lines.length; i++) {
-      const cols = parseCSVLine(lines[i]);
-      if (!cols || cols.length < 2) continue;
-      const trackName = cols[trackCol] || '';
-      const artistName = cols[artistCol] || '';
-      if (!trackName) continue;
-      if (plNameCol !== -1 && cols[plNameCol]) playlistName = cols[plNameCol];
-      newSongs.push({
-        trackId: (cols[idCol] || Math.random().toString(36)).replace(/"/g, ''),
-        track: trackName,
-        artist: artistName,
-        album: cols[albumCol] || '',
-        playlist: playlistName,
-        playlistId: 'csv-' + playlistName.replace(/\s/g, '-').toLowerCase(),
-        date: '',
-        addedBy: cols[addedByCol] || '—',
-        isDuplicate: false,
-      });
-    }
-
-    if (newSongs.length === 0) { alert('No songs found in CSV!'); return; }
-
-    const playlistId = 'csv-' + playlistName.replace(/\s/g, '-').toLowerCase();
-    if (vaultData.playlists && vaultData.playlists.find(p => p.id === playlistId)) {
-      alert('This playlist is already in the Vault!'); return;
-    }
-    const playlist = { id: playlistId, name: playlistName, date: '', trackCount: newSongs.length, addedAt: new Date().toISOString() };
-    document.getElementById('csv-upload-area').textContent = 'Saving to Sheets...';
+  showLoading('Saving to Google Sheets...');
+  try {
     const updated = await postToSheet({ action: 'addPlaylist', playlist, songs: newSongs });
     vaultData = updated;
     allSongs = vaultData.songs || [];
     markDuplicates();
-    buildStats();
-    renderTable();
+    showMainApp();
+  } catch(e) {
+    errEl.textContent = 'Could not save: ' + e.message;
+    errEl.style.display = 'block';
+    if (mode === 'upload') showUploadScreen(); else showMainApp();
+  }
+}
 
-    // Hide the exportify hint
-    document.getElementById('exportify-hint').style.display = 'none';
-    document.getElementById('csv-divider').style.display = 'none';
-    document.getElementById('csv-upload-area').style.display = 'none';
-    document.getElementById('add-error').style.display = 'none';
-    document.getElementById('playlist-url-input').value = '';
-    document.getElementById('csv-file-input').value = '';
-    alert('✅ Added ' + newSongs.length + ' songs from ' + playlistName + '!');
-  };
-  reader.readAsText(file);
+function formatDuration(ms) {
+  if (!ms) return '—';
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  return m + ':' + String(s).padStart(2, '0');
 }
 
 function parseCSVLine(line) {
-  const result = [];
-  let current = '';
-  let inQuotes = false;
+  const result = []; let current = ''; let inQuotes = false;
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (ch === '"') { inQuotes = !inQuotes; }
@@ -611,11 +456,20 @@ function parseCSVLine(line) {
 function markDuplicates() {
   allSongs = vaultData.songs || [];
   const keyCount = {};
-  for (const s of allSongs) {
-    const k = (s.artist + '|||' + s.track).toLowerCase();
-    keyCount[k] = (keyCount[k] || 0) + 1;
-  }
+  for (const s of allSongs) { const k = (s.artist + '|||' + s.track).toLowerCase(); keyCount[k] = (keyCount[k] || 0) + 1; }
   for (const s of allSongs) { s.isDuplicate = keyCount[(s.artist + '|||' + s.track).toLowerCase()] > 1; }
+}
+
+// ── REMOVE PLAYLIST ──
+async function removePlaylist(id) {
+  if (!confirm('Remove this playlist and all its songs from the Vault?')) return;
+  showLoading('Removing...');
+  try {
+    const updated = await postToSheet({ action: 'removePlaylist', playlistId: id });
+    vaultData = updated; allSongs = vaultData.songs || [];
+    markDuplicates();
+    if (allSongs.length === 0) { showUploadScreen(); } else { showMainApp(); showTab('playlists'); }
+  } catch(e) { alert('Could not remove: ' + e.message); showMainApp(); }
 }
 
 // ── STATS ──
@@ -624,6 +478,8 @@ function buildStats() {
   document.getElementById('stat-playlists').textContent = (vaultData.playlists || []).length;
   document.getElementById('stat-dupes').textContent = allSongs.filter(s => s.isDuplicate).length;
   document.getElementById('stat-artists').textContent = new Set(allSongs.map(s => s.artist.toLowerCase())).size;
+  const allGenres = allSongs.flatMap(s => (s.genres || '').split(',').map(g => g.trim()).filter(Boolean));
+  document.getElementById('stat-genres').textContent = new Set(allGenres).size;
 }
 
 // ── TABLE ──
@@ -646,13 +502,13 @@ function renderTable() {
   const query = (document.getElementById('search-input').value || '').toLowerCase();
   let songs = allSongs.filter(s => {
     if (currentFilter === 'dupes' && !s.isDuplicate) return false;
-    if (query) return s.track.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query) || s.playlist.toLowerCase().includes(query) || s.addedBy.toLowerCase().includes(query);
+    if (query) return s.track.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query) || s.playlist.toLowerCase().includes(query) || (s.genres || '').toLowerCase().includes(query) || (s.addedBy || '').toLowerCase().includes(query);
     return true;
   });
   const { col, dir } = currentSort;
   songs.sort((a, b) => {
-    let va = a[col] || '', vb = b[col] || '';
-    const cmp = String(va).localeCompare(String(vb), undefined, { numeric: true });
+    let va = a[col] ?? '', vb = b[col] ?? '';
+    const cmp = typeof va === 'number' ? va - vb : String(va).localeCompare(String(vb), undefined, { numeric: true });
     return dir === 'asc' ? cmp : -cmp;
   });
   const tbody = document.getElementById('table-body');
@@ -662,9 +518,11 @@ function renderTable() {
   tbody.innerHTML = songs.map(s => `
     <tr class="${s.isDuplicate ? 'duplicate' : ''}">
       <td><div class="song-name">${esc(s.track)}</div><div class="song-sub">${esc(s.album)}</div></td>
-      <td><div class="song-name">${esc(s.artist)}</div></td>
+      <td><div class="song-name">${esc(s.artist)}</div><div class="song-sub">${esc(s.genres ? s.genres.split(',')[0] : '')}</div></td>
       <td><div class="mono-sm">${esc(s.playlist)}</div></td>
       <td><span class="added-by">${esc(s.addedBy)}</span></td>
+      <td><div class="mono-sm">${s.popularity || '—'}</div></td>
+      <td><div class="mono-sm">${s.energy ? Math.round(s.energy * 100) + '%' : '—'}</div></td>
       <td>${s.isDuplicate ? '<span class="dup-badge">⚠ Repeat</span>' : ''}</td>
     </tr>
   `).join('');
@@ -687,72 +545,142 @@ function renderPlaylists() {
     </div>
   `).join('');
 }
-async function removePlaylist(id) {
-  if (!confirm('Remove this playlist and all its songs from the Vault?')) return;
-  try {
-    const updated = await postToSheet({ action: 'removePlaylist', playlistId: id });
-    vaultData = updated;
-    allSongs = vaultData.songs || [];
-    markDuplicates();
-    renderPlaylists();
-    renderTable();
-  } catch(e) {
-    alert('Could not remove playlist: ' + e.message);
-  }
+
+// ── ANALYTICS ──
+function avg(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
+function pct(val) { return Math.round(val * 100); }
+function top(arr, n) { return arr.slice(0, n); }
+
+function renderAnalytics() {
+  const songs = allSongs.filter(s => !s.isDuplicate || true);
+  if (songs.length === 0) { document.getElementById('analytics-content').innerHTML = '<div class="no-data">No data yet — add some playlists first!</div>'; return; }
+
+  const withAudio = songs.filter(s => s.energy > 0);
+  const withPop = songs.filter(s => s.popularity > 0);
+
+  // Contributors
+  const contributors = [...new Set(songs.map(s => s.addedBy).filter(a => a && a !== '—'))];
+
+  // Artist counts
+  const artistCount = {};
+  songs.forEach(s => { artistCount[s.artist] = (artistCount[s.artist] || 0) + 1; });
+  const topArtists = Object.entries(artistCount).sort((a,b) => b[1]-a[1]).slice(0,8);
+
+  // Genre counts
+  const genreCount = {};
+  songs.forEach(s => (s.genres||'').split(',').map(g=>g.trim()).filter(Boolean).forEach(g => { genreCount[g] = (genreCount[g]||0)+1; }));
+  const topGenres = Object.entries(genreCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  // Longest song
+  const longestSong = [...songs].sort((a,b) => (b.durationMs||0)-(a.durationMs||0))[0];
+
+  // Longest playlist
+  const plDurations = {};
+  songs.forEach(s => { plDurations[s.playlist] = (plDurations[s.playlist]||0) + (s.durationMs||0); });
+  const longestPl = Object.entries(plDurations).sort((a,b)=>b[1]-a[1])[0];
+
+  // Most obscure (lowest avg popularity)
+  const contribPop = {};
+  contributors.forEach(c => {
+    const cs = withPop.filter(s => s.addedBy === c);
+    if (cs.length) contribPop[c] = avg(cs.map(s=>s.popularity));
+  });
+  const mostObscure = Object.entries(contribPop).sort((a,b)=>a[1]-b[1]);
+
+  // Guilty pleasures (highest popularity songs by each contributor)
+  const guiltyPleasures = contributors.flatMap(c => {
+    const cs = withPop.filter(s => s.addedBy === c);
+    return cs.sort((a,b)=>b.popularity-a.popularity).slice(0,1).map(s => ({...s, contributor: c}));
+  }).sort((a,b)=>b.popularity-a.popularity).slice(0,5);
+
+  // Most miserable month (lowest valence playlist)
+  const plValence = {};
+  songs.forEach(s => { if(s.valence>0) { if(!plValence[s.playlist]) plValence[s.playlist]=[]; plValence[s.playlist].push(s.valence); }});
+  const miserablePl = Object.entries(plValence).map(([p,v])=>({name:p,val:avg(v)})).sort((a,b)=>a.val-b.val)[0];
+  const happiestPl = Object.entries(plValence).map(([p,v])=>({name:p,val:avg(v)})).sort((a,b)=>b.val-a.val)[0];
+
+  // Energy by contributor
+  const contribEnergy = {};
+  contributors.forEach(c => {
+    const cs = withAudio.filter(s => s.addedBy === c);
+    if (cs.length) contribEnergy[c] = { energy: avg(cs.map(s=>s.energy)), dance: avg(cs.map(s=>s.danceability)), valence: avg(cs.map(s=>s.valence)), tempo: avg(cs.map(s=>s.tempo)), instrumentalness: avg(cs.map(s=>s.instrumentalness)) };
+  });
+
+  // Genre by contributor
+  const contribGenres = {};
+  contributors.forEach(c => {
+    const gc = {};
+    songs.filter(s=>s.addedBy===c).forEach(s=>(s.genres||'').split(',').map(g=>g.trim()).filter(Boolean).forEach(g=>{gc[g]=(gc[g]||0)+1;}));
+    contribGenres[c] = Object.entries(gc).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([g])=>g);
+  });
+
+  const maxArtist = topArtists[0]?.[1] || 1;
+  const maxGenre = topGenres[0]?.[1] || 1;
+
+  document.getElementById('analytics-content').innerHTML = `
+    <div class="analytics-grid three">
+      <div class="a-card">
+        <h3>⏱ Longest Song</h3>
+        ${longestSong ? `<div class="a-big">${longestSong.durationFmt}</div><div class="a-big-label">${esc(longestSong.track)}</div><div class="a-big-sub">${esc(longestSong.artist)} · ${esc(longestSong.playlist)}</div>` : '<div class="no-data">No data</div>'}
+      </div>
+      <div class="a-card">
+        <h3>📼 Longest Playlist</h3>
+        ${longestPl ? `<div class="a-big">${formatDuration(longestPl[1])}</div><div class="a-big-label">${esc(longestPl[0])}</div>` : '<div class="no-data">No data</div>'}
+      </div>
+      <div class="a-card">
+        <h3>😭 Most Miserable Month</h3>
+        ${miserablePl ? `<div class="a-big">${pct(miserablePl.val)}%</div><div class="a-big-label">Valence</div><div class="a-big-sub">${esc(miserablePl.name)}</div>` : '<div class="no-data">No data</div>'}
+      </div>
+    </div>
+    <div class="analytics-grid three">
+      <div class="a-card">
+        <h3>😊 Happiest Month</h3>
+        ${happiestPl ? `<div class="a-big" style="color:var(--amber)">${pct(happiestPl.val)}%</div><div class="a-big-label">Valence</div><div class="a-big-sub">${esc(happiestPl.name)}</div>` : '<div class="no-data">No data</div>'}
+      </div>
+      <div class="a-card">
+        <h3>🏆 Most Obscure Taste</h3>
+        ${mostObscure.map(([c,p],i) => `<div class="a-row"><div class="a-label">${i===0?'🥇':i===1?'🥈':'🥉'} ${esc(c)}</div><div class="a-bar-wrap"><div class="a-bar red" style="width:${p}%"></div></div><div class="a-val">${Math.round(p)}</div></div>`).join('') || '<div class="no-data">No data</div>'}
+        <div class="a-big-sub" style="margin-top:8px;">Lower = more obscure 😎</div>
+      </div>
+      <div class="a-card">
+        <h3>😳 Guilty Pleasures</h3>
+        ${guiltyPleasures.map(s => `<div class="guilty-row"><div class="guilty-pop">${Math.round(s.popularity)}</div><div class="guilty-info"><div class="track">${esc(s.track)}</div><div class="artist">${esc(s.artist)}</div></div><span class="guilty-by">${esc(s.addedBy)}</span></div>`).join('') || '<div class="no-data">No data</div>'}
+      </div>
+    </div>
+    <div class="analytics-grid">
+      <div class="a-card">
+        <h3>🎸 Top Artists</h3>
+        ${topArtists.map(([a,n]) => `<div class="a-row"><div class="a-label">${esc(a)}</div><div class="a-bar-wrap"><div class="a-bar" style="width:${(n/maxArtist)*100}%"></div></div><div class="a-val">${n}</div></div>`).join('')}
+      </div>
+      <div class="a-card">
+        <h3>🎵 Top Genres</h3>
+        ${topGenres.map(([g,n]) => `<div class="a-row"><div class="a-label">${esc(g)}</div><div class="a-bar-wrap"><div class="a-bar blue" style="width:${(n/maxGenre)*100}%"></div></div><div class="a-val">${n}</div></div>`).join('') || '<div class="no-data">No genre data yet</div>'}
+      </div>
+    </div>
+    <div class="analytics-grid wide">
+      <div class="a-card">
+        <h3>👤 Contributor Vibes</h3>
+        ${contributors.map(c => {
+          const e = contribEnergy[c];
+          const cs = songs.filter(s=>s.addedBy===c);
+          return `<div class="contributor-block">
+            <div class="contributor-name">${esc(c)} <span class="count">${cs.length} songs</span></div>
+            ${e ? `
+            <div class="a-row"><div class="a-label">Energy <span class="sub">${pct(e.energy)}%</span></div><div class="a-bar-wrap"><div class="a-bar red" style="width:${pct(e.energy)}%"></div></div></div>
+            <div class="a-row"><div class="a-label">Danceability <span class="sub">${pct(e.dance)}%</span></div><div class="a-bar-wrap"><div class="a-bar amber" style="width:${pct(e.dance)}%"></div></div></div>
+            <div class="a-row"><div class="a-label">Happiness <span class="sub">${pct(e.valence)}%</span></div><div class="a-bar-wrap"><div class="a-bar" style="width:${pct(e.valence)}%"></div></div></div>
+            <div class="a-row"><div class="a-label">Instrumentalness <span class="sub">${pct(e.instrumentalness)}%</span></div><div class="a-bar-wrap"><div class="a-bar purple" style="width:${pct(e.instrumentalness)}%"></div></div></div>
+            <div class="a-row" style="margin-top:4px;"><div class="a-label">Avg Tempo</div><div class="a-val" style="width:auto">${Math.round(e.tempo)} BPM</div></div>
+            ` : ''}
+            ${contribGenres[c]?.length ? `<div style="margin-top:10px;"><div class="a-big-sub" style="margin-bottom:6px;">Fave genres:</div><div class="genre-chips">${contribGenres[c].map(g=>`<span class="genre-chip">${esc(g)}</span>`).join('')}</div></div>` : ''}
+          </div>`;
+        }).join('') || '<div class="no-data">No contributor data yet</div>'}
+      </div>
+    </div>
+  `;
 }
 
-// ── MIGRATION ──
-function checkForLocalData() {
-  try {
-    const raw = localStorage.getItem('looseners_vault_data');
-    if (!raw) return;
-    const local = JSON.parse(raw);
-    if (!local.songs || local.songs.length === 0) return;
-    // Only show if Google Sheets is empty
-    if (vaultData.songs && vaultData.songs.length > 0) return;
-    document.getElementById('migrate-count').textContent = local.songs.length + ' songs across ' + (local.playlists || []).length + ' playlists';
-    document.getElementById('migrate-banner').style.display = 'flex';
-  } catch(e) { console.warn('Migration check failed:', e); }
-}
-
-async function migrateData() {
-  const raw = localStorage.getItem('looseners_vault_data');
-  if (!raw) return;
-  const local = JSON.parse(raw);
-  const playlists = local.playlists || [];
-  const songs = local.songs || [];
-  if (songs.length === 0) return;
-
-  const btn = document.querySelector('.migrate-banner .btn-amber');
-  btn.textContent = 'Moving...'; btn.disabled = true;
-
-  try {
-    // Send all playlists one by one
-    for (const pl of playlists) {
-      const plSongs = songs.filter(s => s.playlistId === pl.id);
-      await postToSheet({ action: 'addPlaylist', playlist: pl, songs: plSongs });
-    }
-    // Re-fetch
-    const updated = await fetchVaultData();
-    vaultData = updated;
-    allSongs = vaultData.songs || [];
-    markDuplicates();
-    buildStats();
-    renderTable();
-    localStorage.removeItem('looseners_vault_data');
-    document.getElementById('migrate-banner').style.display = 'none';
-    alert('✅ All done! ' + songs.length + ' songs moved to Google Sheets.');
-  } catch(e) {
-    alert('Migration failed: ' + e.message);
-    btn.textContent = 'Move to Google Sheets'; btn.disabled = false;
-  }
-}
-
-function dismissMigration() {
-  document.getElementById('migrate-banner').style.display = 'none';
-}
-
-function esc(str) { return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 </body>
 </html>
