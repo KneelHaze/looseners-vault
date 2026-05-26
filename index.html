@@ -233,7 +233,7 @@
       <div class="stat-card"><div class="stat-val" id="stat-genres">0</div><div class="stat-label">Genres</div></div>
     </div>
     <div class="toolbar">
-      <input class="search-box" id="search-input" type="text" placeholder="Search songs, artists, genres..." oninput="renderTable()">
+      <input class="search-box" id="search-input" type="text" placeholder="Search songs, artists, genres..." oninput="renderTable(this.value)">
       <button class="filter-btn active" id="filter-all" onclick="setFilter('all')">All</button>
       <button class="filter-btn" id="filter-dupes" onclick="setFilter('dupes')">🔴 Repeats only</button>
     </div>
@@ -660,9 +660,9 @@ function sortBy(col) {
   if (th) { th.classList.add('sorted'); th.querySelector('.sort-icon').textContent = currentSort.dir === 'asc' ? '↑' : '↓'; }
   renderTable();
 }
-function renderTable() {
+function renderTable(searchVal) {
   buildStats();
-  const query = (document.getElementById('search-input').value || '').toLowerCase();
+  const query = (searchVal !== undefined ? searchVal : (document.getElementById('search-input').value || '')).toLowerCase();
   let songs = allSongs.filter(s => {
     if (currentFilter === 'dupes' && !s.isDuplicate) return false;
     if (query) return (s.track||'').toLowerCase().includes(query) || (s.artist||'').toLowerCase().includes(query) || (s.playlist||'').toLowerCase().includes(query) || (s.genres||'').toLowerCase().includes(query) || (s.addedBy||'').toLowerCase().includes(query);
